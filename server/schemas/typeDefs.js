@@ -22,7 +22,7 @@ const typeDefs = gql`
 
   type Mutation {
     addMatchup(tech1: String!, tech2: String!, tech1_votes: Number!, tech2_votes: Number!): Matchup
-    addVote(tech1_votes: Number!, tech1_votes: Number!): Matchup
+    addVote(_id: ID, tech1_votes: Number!, tech1_votes: Number!): Matchup
   }
 `;
 

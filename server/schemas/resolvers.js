@@ -1,14 +1,12 @@
-const { AuthenticationError } = require('apollo-server-express');
-const { Matchup, Tech } = require('../models');
-const { signToken } = require('../utils/auth');
+const { Matchup, Tech } = require("../models");
 
 const resolvers = {
   Query: {
     matchups: async () => {
-      return Matchup.find().populate('techs');
+      return Matchup.find().populate("techs");
     },
     matchup: async (parent, { _id }) => {
-      return User.findOne({ _id }).populate('techs');
+      return User.findOne({ _id }).populate("techs");
     },
     techs: async () => {
       return Tech.find();
@@ -17,15 +15,20 @@ const resolvers = {
 
   Mutation: {
     addMatchup: async (parent, { tech1, tech2, tech1_votes, tech2_votes }) => {
-      const matchup = await Matchup.create({ tech1, tech2, tech1_votes, tech2_votes  });
-      const token = signToken(matchup);
-      return { token, matchup };
+      return Matchup.create({ tech1, tech2, tech1_votes, tech2_votes });
     },
-    addVote: async (parent, { tech1_votes, tech2_votes  }) => {
-        const matchup = await Matchup.create({ tech1_votes, tech2_votes  });
-        const token = signToken(matchup);
-        return { token, matchup };
-      },
+    addVote: async (parent, { _id, tech1_votes, tech2_votes }) => {
+      return Matchup.findOneAndUpdate(
+        { _id: _id },
+        {
+          $addToSet: { tech1_votes, tech2_votes },
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+    },
   },
 };
 
